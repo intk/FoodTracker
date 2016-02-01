@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "CA1902DB1B10E523000271C4"
-               BuildableName = "FoodTracker.app"
-               BlueprintName = "FoodTracker"
-               ReferencedContainer = "container:FoodTracker.xcodeproj">
+               BuildableName = "ZMOnsite.app"
+               BlueprintName = "ZMOnsite"
+               ReferencedContainer = "container:ZMOnsite.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -28,24 +28,14 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "CA1902EF1B10E523000271C4"
-               BuildableName = "FoodTrackerTests.xctest"
-               BlueprintName = "FoodTrackerTests"
-               ReferencedContainer = "container:FoodTracker.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "CA1902DB1B10E523000271C4"
-            BuildableName = "FoodTracker.app"
-            BlueprintName = "FoodTracker"
-            ReferencedContainer = "container:FoodTracker.xcodeproj">
+            BuildableName = "ZMOnsite.app"
+            BlueprintName = "ZMOnsite"
+            ReferencedContainer = "container:ZMOnsite.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -66,9 +56,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "CA1902DB1B10E523000271C4"
-            BuildableName = "FoodTracker.app"
-            BlueprintName = "FoodTracker"
-            ReferencedContainer = "container:FoodTracker.xcodeproj">
+            BuildableName = "ZMOnsite.app"
+            BlueprintName = "ZMOnsite"
+            ReferencedContainer = "container:ZMOnsite.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -85,9 +75,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "CA1902DB1B10E523000271C4"
-            BuildableName = "FoodTracker.app"
-            BlueprintName = "FoodTracker"
-            ReferencedContainer = "container:FoodTracker.xcodeproj">
+            BuildableName = "ZMOnsite.app"
+            BlueprintName = "ZMOnsite"
+            ReferencedContainer = "container:ZMOnsite.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

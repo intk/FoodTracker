@@ -11,12 +11,10 @@ import UIKit
 class AnnotatedPhotoCell: UICollectionViewCell {
     
     @IBOutlet private weak var imageView: UIImageView!
-    @IBOutlet private weak var captionLabel: UILabel!
-    @IBOutlet private weak var commentLabel: UILabel!
     @IBOutlet private weak var imageWidth: NSLayoutConstraint!
     @IBOutlet private weak var imageHeight: NSLayoutConstraint!
     
-    var photo: Meal? {
+    var photo: Object? {
         didSet {
             if let photo = photo {
                 imageView.image = photo.photo

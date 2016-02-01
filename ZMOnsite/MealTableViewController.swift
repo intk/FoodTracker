@@ -1,5 +1,5 @@
 //
-//  MealTableViewController.swift
+//  ObjectTableViewController.swift
 //  FoodTracker
 //
 //  Created by André Gonçalves on 19/01/15.
@@ -8,10 +8,10 @@
 
 import UIKit
 
-class MealTableViewController: UITableViewController {
+class ObjectTableViewController: UITableViewController {
     // MARK: Properties
     
-    var meals = [Meal]()
+    var Objects = [Object]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,26 +19,26 @@ class MealTableViewController: UITableViewController {
         // Use the edit button item provided by the table view controller.
         navigationItem.leftBarButtonItem = editButtonItem()
         
-        // Load any saved meals, otherwise load sample data.
-        if let savedMeals = loadMeals() {
-            meals += savedMeals
+        // Load any saved Objects, otherwise load sample data.
+        if let savedObjects = loadObjects() {
+            Objects += savedObjects
         } else {
             // Load the sample data.
-            loadSampleMeals()
+            loadSampleObjects()
         }
     }
     
-    func loadSampleMeals() {
-        let photo1 = UIImage(named: "meal1")!
-        let meal1 = Meal(name: "Caprese Salad", photo: photo1, rating: 4)!
+    func loadSampleObjects() {
+        let photo1 = UIImage(named: "Object1")!
+        let Object1 = Object(name: "Caprese Salad", photo: photo1, rating: 4)!
         
-        let photo2 = UIImage(named: "meal2")!
-        let meal2 = Meal(name: "Chicken and Potatoes", photo: photo2, rating: 5)!
+        let photo2 = UIImage(named: "Object2")!
+        let Object2 = Object(name: "Chicken and Potatoes", photo: photo2, rating: 5)!
         
-        let photo3 = UIImage(named: "meal3")!
-        let meal3 = Meal(name: "Pasta with Meatballs", photo: photo3, rating: 3)!
+        let photo3 = UIImage(named: "Object3")!
+        let Object3 = Object(name: "Pasta with Meatballs", photo: photo3, rating: 3)!
         
-        meals += [meal1, meal2, meal3]
+        Objects += [Object1, Object2, Object3]
     }
 
     override func didReceiveMemoryWarning() {
@@ -53,20 +53,20 @@ class MealTableViewController: UITableViewController {
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return meals.count
+        return Objects.count
     }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         // Table view cells are reused and should be dequeued using a cell identifier.
-        let cellIdentifier = "MealTableViewCell"
+        let cellIdentifier = "ObjectTableViewCell"
         let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! MealTableViewCell
         
-        // Fetches the appropriate meal for the data source layout.
-        let meal = meals[indexPath.row]
+        // Fetches the appropriate Object for the data source layout.
+        let Object = Objects[indexPath.row]
         
-        cell.nameLabel.text = meal.name
-        cell.photoImageView.image = meal.photo
-        cell.ratingControl.rating = meal.rating
+        cell.nameLabel.text = Object.name
+        cell.photoImageView.image = Object.photo
+        cell.ratingControl.rating = Object.rating
         
         return cell
     }
@@ -82,8 +82,8 @@ class MealTableViewController: UITableViewController {
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == .Delete {
             // Delete the row from the data source
-            meals.removeAtIndex(indexPath.row)
-            saveMeals()
+            Objects.removeAtIndex(indexPath.row)
+            saveObjects()
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
         } else if editingStyle == .Insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
@@ -112,48 +112,48 @@ class MealTableViewController: UITableViewController {
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "ShowDetail" {
-            let mealDetailViewController = segue.destinationViewController as! MealViewController
+            let ObjectDetailViewController = segue.destinationViewController as! ObjectViewController
             
             // Get the cell that generated this segue.
-            if let selectedMealCell = sender as? MealTableViewCell {
-                let indexPath = tableView.indexPathForCell(selectedMealCell)!
-                let selectedMeal = meals[indexPath.row]
-                mealDetailViewController.meal = selectedMeal
+            if let selectedObjectCell = sender as? MealTableViewCell {
+                let indexPath = tableView.indexPathForCell(selectedObjectCell)!
+                let selectedObject = Objects[indexPath.row]
+                ObjectDetailViewController.object = selectedObject
             }
         }
         else if segue.identifier == "AddItem" {
-            print("Adding new meal.")
+            print("Adding new Object.")
         }
     }
     
 
-    @IBAction func unwindToMealList(sender: UIStoryboardSegue) {
-        if let sourceViewController = sender.sourceViewController as? MealViewController, meal = sourceViewController.meal {
+    @IBAction func unwindToObjectList(sender: UIStoryboardSegue) {
+        if let sourceViewController = sender.sourceViewController as? ObjectViewController, Object = sourceViewController.object {
             if let selectedIndexPath = tableView.indexPathForSelectedRow {
-                // Update an existing meal.
-                meals[selectedIndexPath.row] = meal
+                // Update an existing Object.
+                Objects[selectedIndexPath.row] = Object
                 tableView.reloadRowsAtIndexPaths([selectedIndexPath], withRowAnimation: .None)
             } else {
-                // Add a new meal.
-                let newIndexPath = NSIndexPath(forRow: meals.count, inSection: 0)
-                meals.append(meal)
+                // Add a new Object.
+                let newIndexPath = NSIndexPath(forRow: Objects.count, inSection: 0)
+                Objects.append(Object)
                 tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Bottom)
             }
-            // Save the meals.
-            saveMeals()
+            // Save the Objects.
+            saveObjects()
         }
     }
     
     // MARK: NSCoding
     
-    func saveMeals() {
-        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(meals, toFile: Meal.ArchiveURL.path!)
+    func saveObjects() {
+        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(Objects, toFile: Object.ArchiveURL.path!)
         if !isSuccessfulSave {
-            print("Failed to save meals...")
+            print("Failed to save Objects...")
         }
     }
     
-    func loadMeals() -> [Meal]? {
-        return NSKeyedUnarchiver.unarchiveObjectWithFile(Meal.ArchiveURL.path!) as? [Meal]
+    func loadObjects() -> [Object]? {
+        return NSKeyedUnarchiver.unarchiveObjectWithFile(Object.ArchiveURL.path!) as? [Object]
     }
 }

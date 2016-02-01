@@ -48,30 +48,86 @@ class PinterestLayout: UICollectionViewLayout {
     
     // 2
     var numberOfRows = 2
+    var numberOfColumns = 2
     var cellPadding: CGFloat = 6.0
+    var currentOrientation: UIDeviceOrientation!
     
     // 3
     private var cache = [PinterestLayoutAttributes]()
     
     // 4
-    private var contentHeight: CGFloat {
-        let insets = collectionView!.contentInset
-        return CGRectGetHeight(collectionView!.bounds) - (insets.top + insets.bottom)
+    private var contentHeight: CGFloat = 0.0
+    private var contentWidth: CGFloat = 0.0
+    
+    func preparePortraitLayout() {
+        //print("prepare portrait layout")
+        
+        var insets = collectionView!.contentInset
+        insets.top = 80.0
+        collectionView!.contentInset = insets
+        contentHeight = CGFloat(0.0)
+        contentWidth = CGRectGetWidth(collectionView!.bounds) - (insets.left + insets.right)
+        
+        cache = [PinterestLayoutAttributes]()
+        // 1
+        if cache.isEmpty {
+            // 2
+            let columnWidth = contentWidth / CGFloat(numberOfColumns)
+            var xOffset = [CGFloat]()
+            for column in 0 ..< numberOfColumns {
+                xOffset.append(CGFloat(column) * columnWidth )
+            }
+            var column = 0
+            var yOffset = [CGFloat](count: numberOfColumns, repeatedValue: 0)
+            
+            // 3
+            for item in 0 ..< collectionView!.numberOfItemsInSection(0) {
+                
+                let indexPath = NSIndexPath(forItem: item, inSection: 0)
+                
+                // 4
+                let width = columnWidth - cellPadding * 2
+                let photoHeight = delegate.collectionView(collectionView!, heightForPhotoAtIndexPath: indexPath,
+                    withWidth:width)
+                //let annotationHeight = delegate.collectionView(collectionView!,
+                //  heightForAnnotationAtIndexPath: indexPath, withWidth: width)
+                let height = cellPadding +  photoHeight //+ annotationHeight + cellPadding
+                let frame = CGRect(x: xOffset[column], y: yOffset[column], width: columnWidth, height: height)
+                let insetFrame = CGRectInset(frame, cellPadding, cellPadding)
+                
+                // 5
+                let attributes = PinterestLayoutAttributes(forCellWithIndexPath: indexPath)
+                attributes.photoHeight = photoHeight
+                attributes.photoWidth = width
+                attributes.frame = insetFrame
+                cache.append(attributes)
+                
+                // 6
+                contentHeight = max(contentHeight, CGRectGetMaxY(frame))
+                yOffset[column] = yOffset[column] + height
+                
+                column = column >= (numberOfColumns - 1) ? 0 : ++column
+            }
+        }
+        
     }
     
-    private var contentWidth: CGFloat = 0
-    
-    override func prepareLayout() {
+    func prepareLandscapeLayout() {
+        //print("prepare landscape layout")
+        
         var insets = collectionView!.contentInset
         insets.top = 140.0
         insets.bottom = 140.0
         collectionView!.contentInset = insets
         
+        contentHeight = CGRectGetHeight(collectionView!.bounds) - (insets.top + insets.bottom)
+        contentWidth = CGFloat(0.0)
+        
+        cache = [PinterestLayoutAttributes]()
         // 1
         if cache.isEmpty {
             // 2
             let columnHeight = contentHeight / CGFloat(numberOfRows)
-            print(columnHeight)
             
             var yOffset = [CGFloat]()
             for row in 0 ..< numberOfRows {
@@ -113,6 +169,17 @@ class PinterestLayout: UICollectionViewLayout {
         }
     }
     
+    override func prepareLayout() {
+        //print("prepare layout")
+        if (UIDevice.currentDevice().orientation ==  .Portrait) {
+            currentOrientation = .Portrait
+            self.preparePortraitLayout()
+        } else {
+            currentOrientation = UIDevice.currentDevice().orientation
+            self.prepareLandscapeLayout()
+        }
+    }
+    
     override class func layoutAttributesClass() -> AnyClass {
         return PinterestLayoutAttributes.self
     }
@@ -136,7 +203,6 @@ class PinterestLayout: UICollectionViewLayout {
     override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
         var attribute = UICollectionViewLayoutAttributes()
         
-        print(indexPath.row)
         let layoutAttribute = cache[indexPath.row-1]
         attribute = layoutAttribute
         
