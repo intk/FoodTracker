@@ -1,18 +1,17 @@
 //
-//  AnnotatedPhotoCell.swift
-//  FoodTracker
+//  CategoriesImageCell.swift
+//  ZMOnsite
 //
-//  Created by Andre Goncalves on 27/01/16.
+//  Created by Andre Goncalves on 16/02/16.
 //  Copyright © 2016 Apple Inc. All rights reserved.
 //
 
 import UIKit
 
-class AnnotatedPhotoCell: UICollectionViewCell {
-    
-    @IBOutlet private weak var imageView: UIImageView!
-    @IBOutlet private weak var imageWidth: NSLayoutConstraint!
-    @IBOutlet private weak var imageHeight: NSLayoutConstraint!
+class CategoriesImageCell: UICollectionViewCell {
+    @IBOutlet weak var imageHeight: NSLayoutConstraint!
+    @IBOutlet weak var imageWidth: NSLayoutConstraint!
+    @IBOutlet weak var imageView: UIImageView!
     
     var photo: Object? {
         didSet {

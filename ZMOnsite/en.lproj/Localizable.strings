@@ -1,0 +1,17 @@
+/* 
+  Localizable.strings
+  ZMOnsite
+
+  Created by Andre Goncalves on 11/02/16.
+  Copyright © 2016 Apple Inc. All rights reserved.
+*/
+English="English";
+Dutch="Dutch";
+No_Internet_Connection="No Internet Connection";
+Last_Updated_at="Last Updated at";
+title="Title:";
+description="Description:";
+location="Location:";
+story="Story:";
+back="Back";
+objectnumber="Object number:";

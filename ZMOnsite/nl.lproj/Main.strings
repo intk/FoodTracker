@@ -1,0 +1,42 @@
+
+/* Class = "UILabel"; text = "Description:"; ObjectID = "4d2-Zr-h1e"; */
+"4d2-Zr-h1e.text" = "Beschrijving:";
+
+/* Class = "UILabel"; text = "Location"; ObjectID = "9Fg-NA-qvX"; */
+"9Fg-NA-qvX.text" = "Standplaats";
+
+/* Class = "UILabel"; text = "Object number:"; ObjectID = "Hll-do-4ug"; */
+"Hll-do-4ug.text" = "Objectnummer:";
+
+/* Class = "UILabel"; text = "Title:"; ObjectID = "HnK-aF-zBK"; */
+"HnK-aF-zBK.text" = "Titel:";
+
+/* Class = "UILabel"; text = "Description"; ObjectID = "Knt-PS-f8y"; */
+"Knt-PS-f8y.text" = "Beschrijving";
+
+/* Class = "UILabel"; text = "Story"; ObjectID = "L57-e0-rhA"; */
+"L57-e0-rhA.text" = "Objectverhaal";
+
+/* Class = "UILabel"; text = "Story:"; ObjectID = "Qbj-4c-E3q"; */
+"Qbj-4c-E3q.text" = "Objectverhaal:";
+
+/* Class = "UICollectionViewController"; title = "Object details"; ObjectID = "Tlx-3W-bQK"; */
+"Tlx-3W-bQK.title" = "Object informatie";
+
+/* Class = "UIBarButtonItem"; title = "Dutch"; ObjectID = "Tyw-er-ACm"; */
+"Tyw-er-ACm.title" = "Dutch";
+
+/* Class = "UILabel"; text = "Object number"; ObjectID = "Zsd-07-Zpl"; */
+"Zsd-07-Zpl.text" = "Objectnummer";
+
+/* Class = "UILabel"; text = "Title"; ObjectID = "dWp-O5-NrA"; */
+"dWp-O5-NrA.text" = "Titel";
+
+/* Class = "UILabel"; text = "Location:"; ObjectID = "hUJ-eF-R5I"; */
+"hUJ-eF-R5I.text" = "Standplaats:";
+
+/* Class = "UIBarButtonItem"; title = "Dutch"; ObjectID = "lW6-Q6-gmp"; */
+"lW6-Q6-gmp.title" = "Dutch";
+
+/* Class = "UINavigationItem"; title = "New Object"; ObjectID = "qx4-RS-RMK"; */
+"qx4-RS-RMK.title" = "Nieuw object";

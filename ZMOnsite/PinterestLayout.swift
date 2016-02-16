@@ -60,8 +60,6 @@ class PinterestLayout: UICollectionViewLayout {
     private var contentWidth: CGFloat = 0.0
     
     func preparePortraitLayout() {
-        //print("prepare portrait layout")
-        
         var insets = collectionView!.contentInset
         insets.top = 80.0
         collectionView!.contentInset = insets
@@ -91,7 +89,7 @@ class PinterestLayout: UICollectionViewLayout {
                     withWidth:width)
                 //let annotationHeight = delegate.collectionView(collectionView!,
                 //  heightForAnnotationAtIndexPath: indexPath, withWidth: width)
-                let height = cellPadding +  photoHeight //+ annotationHeight + cellPadding
+                let height = cellPadding + photoHeight //+ annotationHeight + cellPadding
                 let frame = CGRect(x: xOffset[column], y: yOffset[column], width: columnWidth, height: height)
                 let insetFrame = CGRectInset(frame, cellPadding, cellPadding)
                 
@@ -113,15 +111,15 @@ class PinterestLayout: UICollectionViewLayout {
     }
     
     func prepareLandscapeLayout() {
-        //print("prepare landscape layout")
-        
         var insets = collectionView!.contentInset
-        insets.top = 140.0
-        insets.bottom = 140.0
+        insets.top = 130.0
+        insets.bottom = 130.0
         collectionView!.contentInset = insets
         
         contentHeight = CGRectGetHeight(collectionView!.bounds) - (insets.top + insets.bottom)
         contentWidth = CGFloat(0.0)
+        
+        self.collectionView!.alwaysBounceVertical = true
         
         cache = [PinterestLayoutAttributes]()
         // 1
@@ -148,8 +146,8 @@ class PinterestLayout: UICollectionViewLayout {
                 let photoWidth = delegate.collectionView(collectionView!, heightForPhotoAtIndexPath: indexPath,
                     withWidth:h)
                 
-                let w = cellPadding + photoWidth
-                let frame = CGRect(x: xOffset[row], y: yOffset[row], width: w, height: h)
+                let w = 2 * cellPadding + photoWidth
+                let frame = CGRect(x: xOffset[row], y: yOffset[row], width: w, height: columnHeight)
                 
                 let insetFrame = CGRectInset(frame, cellPadding, cellPadding)
                 

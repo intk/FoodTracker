@@ -9,92 +9,80 @@
 import UIKit
 import AVFoundation
 
-class ObjectCollectionViewController: UICollectionViewController {
+class ObjectCollectionViewController: UICollectionViewController, NSXMLParserDelegate {
     
     var objects = [Object]()
+    var dateFormatter = NSDateFormatter()
+    var xmlParser: NSXMLParser!
+    var englishParse: Bool = false
+    
+    // RSS Feed
+    var entryDictionary: [String:String]! = Dictionary()
+    var entryTitle: String!
+    var entryDescription: String!
+    var entryObjectNumber: String!
+    var entryStory: String!
+    var entryCurrentLocation: String!
+    
+    var entrySyncDate: String!
+    var entryImageURL: String!
+    var entriesArray:[Dictionary<String, String>]! = Array()
+    var currentParsedElement:String! = String()
+    var urlRequest = NSMutableURLRequest()
 
+    var backButton: UIBarButtonItem!
+    
+    // Pull to refresh
+    var refreshControl: UIRefreshControl!
+    
+    // Language button
+    @IBOutlet weak var languageBtn: UIBarButtonItem!
+    
+    deinit{
+        NSNotificationCenter.defaultCenter().removeObserver(self)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "languageDidChangeNotification:", name: "LANGUAGE_DID_CHANGE", object: nil)
+        
+        self.dateFormatter.dateStyle = NSDateFormatterStyle.ShortStyle
+        self.dateFormatter.timeStyle = NSDateFormatterStyle.LongStyle
 
         // Do any additional setup after loading the view.
         // Load any saved Objects, otherwise load sample data.
-        /*if let savedObjects = loadObjects() {
-            Objects += savedObjects
+        
+        if let savedObjects = loadObjects() {
+            objects += savedObjects
         } else {
             // Load the sample data.
-            loadSampleObjects()
-        }*/
-        loadSampleObjects()
+            loadRSSObjects()
+        }
+        //loadRSSObjects()
         
         if let layout = collectionView?.collectionViewLayout as? PinterestLayout {
             layout.delegate = self
         }
         
+        refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: "handleRefresh:", forControlEvents: UIControlEvents.ValueChanged)
+        
+        collectionView!.addSubview(refreshControl)
         collectionView!.backgroundColor = UIColor.whiteColor()
         collectionView!.contentInset = UIEdgeInsets(top: 23, left: 5, bottom: 10, right: 5)
+        
+        checkLanguage()
     }
     
     override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)
         self.collectionView!.reloadData()
     }
-    
-    func loadSampleObjects() {
-        
-        let photo1 = UIImage(named: "Object1")!
-        let Object1 = Object(name: "Dekselbokaal met radgravure, inscriptie: HANSIE IN DE KELDER (glas) Duitsland of Nederland, 1725-1750", photo: photo1, objectNumber:"AB1694-01/02", description:"", story:"In de achttiende eeuw nam de belangstelling voor diamantgegraveerde glazen af ten gunste van radgegraveerde en geslepen glazen. De techniek is heel anders dan die van de diamantgravure; door met een diamant in een graveerstift op glas te krassen, ontstaat contrast tussen licht (gekraste delen) en donker (gladde delen). Bij de radgravure wordt de tekening aangebracht door het glas te drukken tegen snel roterende radertjes, die met de voet in beweging worden gebracht. Men heeft het glas hierbij met beide handen vast. Bij deze techniek is het mogelijk verschillende dieptes in te slijpen en te variëren met een keuze aan wieltjes. Ook kan men het mat geslepen oppervlak weer gedeeltelijk glad polijsten. Letters worden meestal in hoofdletters uitgevoerd. De techniek werd rond het midden van de zeventiende eeuw vanuit Neurenberg naar de Nederlanden overgebracht. Vooral in de achttiende eeuw was het zeer populair. Meestal werd hierbij gebruik gemaakt van geïmporteerde Engelse kelken van sprankelend helder loodglas of Duitse glazen van krijtglas. De voorstellingen variëren van vriendschaps- en huwelijksglazen tot glazen met betrekking tot de kraamtijd. Het krijgen van kinderen om het nageslacht te waarborgen was het belangrijkste doel van het huwelijk in de zeventiende en achttiende eeuw. De voorstellingen op glazen verwijzen hiernaar. Zo verwijst 'Hansje in de kelder' naar de zwangerschap. 'Hansje' was synoniem voor de ongebore", location:"")!
-        
-        let photo3 = UIImage(named: "Object3")!
-        let Object3 = Object(name: "Wonderkamer Leven & Dood", photo: photo3, objectNumber:"B191-64", description:"Jurk (leer, glas, wol, koper, ijzer) Siksika/Zwartvoet Indianen, Canada, 1875-1890", story:"Zwartvoet Indianen zijn van oorsprong jagers. Voor hun kleding en gebruiksvoorwerpen maken ze gebruik van materialen die voorhanden zijn. Deze jurk is gemaakt van leer. Het is een kledingstuk voor dagelijks gebruik. De jurk is versierd met kralen, franjes en belletjes. Oorspronkelijk is de jurk waarschijnlijk ook met hermelijnbont gedecoreerd geweest, maar hiervan zijn geen resten meer over. Met de komst van Europese kolonisten komt vanaf de 19e eeuw ook westerse kleding beschikbaar voor de Zwartvoet. De traditionele leren kleding wordt sindsdien vooral nog op bijzondere gelegenheden gedragen.", location:"Wonderkamer - Indianen")!
-        
-        let photo2 = UIImage(named: "Object2")!
-        let Object2 = Object(name: "Pasta with Meatballs", photo: photo2, objectNumber:"", description:"", story:"", location:"")!
-        
-        let photo4 = UIImage(named: "Object4")!
-        let Object4 = Object(name: "Caprese Salad", photo: photo4, objectNumber:"", description:"", story:"", location:"")!
-        
-        let photo5 = UIImage(named: "Object5")!
-        let Object5 = Object(name: "Chicken and Potatoes", photo: photo5, objectNumber:"", description:"", story:"", location:"")!
-        
-        let photo6 = UIImage(named: "Object6")!
-        let Object6 = Object(name: "Pasta with Meatballs", photo: photo6, objectNumber:"", description:"", story:"", location:"")!
-        
-        let photo7 = UIImage(named: "Object7")!
-        let Object7 = Object(name: "Chicken and Potatoes", photo: photo7, objectNumber:"", description:"", story:"", location:"")!
-        
-        let photo8 = UIImage(named: "Object9")!
-        let Object8 = Object(name: "Pasta with Meatballs", photo: photo8, objectNumber:"", description:"", story:"", location:"")!
-        
-        let photo9 = UIImage(named: "Object10")!
-        let Object9 = Object(name: "Chicken and Potatoes", photo: photo9, objectNumber:"", description:"", story:"", location:"")!
-        
-        let photo10 = UIImage(named: "Object11")!
-        let Object10 = Object(name: "Pasta with Meatballs", photo: photo10, objectNumber:"", description:"", story:"", location:"")!
-        
-        let photo11 = UIImage(named: "Object12")!
-        let Object11 = Object(name: "Pasta with Meatballs", photo: photo11, objectNumber:"", description:"", story:"", location:"")!
-        
-        let photo12 = UIImage(named: "Object13")!
-        let Object12 = Object(name: "Chicken and Potatoes", photo: photo12, objectNumber:"", description:"", story:"", location:"")!
-        
-        let photo13 = UIImage(named: "Object14")!
-        let Object13 = Object(name: "Pasta with Meatballs", photo: photo13, objectNumber:"", description:"", story:"", location:"")!
-        
-        let photo14 = UIImage(named: "Object15")!
-        let Object14 = Object(name: "Pasta with Meatballs", photo: photo14, objectNumber:"", description:"", story:"", location:"")!
-        
-        let photo15 = UIImage(named: "Object16")!
-        let Object15 = Object(name: "Chicken and Potatoes", photo: photo15, objectNumber:"", description:"", story:"", location:"")!
-        
-        let photo16 = UIImage(named: "Object17")!
-        let Object16 = Object(name: "Pasta with Meatballs", photo: photo16, objectNumber:"", description:"", story:"", location:"")!
-        
-        objects += [Object1, Object2, Object3, Object4, Object5, Object6, Object7, Object8, Object9, Object10, Object11, Object12, Object13, Object14, Object15, Object16]
-    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+        NSURLCache.sharedURLCache().removeAllCachedResponses()
     }
     
     // In a storyboard-based application, you will often want to do a little preparation before navigation
@@ -106,6 +94,7 @@ class ObjectCollectionViewController: UICollectionViewController {
                 let indexPath = collectionView!.indexPathForCell(selectedObjectCell)!
                 let selectedObject = objects[indexPath.row]
                 ObjectDetailViewController.object = selectedObject
+                ObjectDetailViewController.objectCollectionViewController = self
             }
         }
         else if segue.identifier == "AddItem" {
@@ -113,25 +102,52 @@ class ObjectCollectionViewController: UICollectionViewController {
         }
     }
     
+    // Actions
     @IBAction func unwindToObjectCollectionList(sender: UIStoryboardSegue) {
-        if let sourceViewController = sender.sourceViewController as? ObjectViewController, Object = sourceViewController.object {
-            let selectedIndexPath = collectionView?.indexPathsForSelectedItems()
-            if (selectedIndexPath!.count > 0) {
-                // Update an existing Object.
-                objects[selectedIndexPath![0].row] = Object
-                collectionView?.reloadData()
-            } else {
-                // Add a new Object.
-                let newIndexPath = NSIndexPath(forRow: objects.count, inSection: 0)
-                objects.append(Object)
-                collectionView?.insertItemsAtIndexPaths([newIndexPath])
-            }
-            // Save the Objects.
-            saveObjects()
+    }
+    
+    @IBAction func clickLanguageBtn(sender: AnyObject) {
+        let selectedLanguage = NSUserDefaults.standardUserDefaults().valueForKey("selectedLanguage") as? String
+        
+        if selectedLanguage == "nl" {
+            NSUserDefaults.standardUserDefaults().setObject("en", forKey: "selectedLanguage")
+            NSNotificationCenter.defaultCenter().postNotificationName("LANGUAGE_WILL_CHANGE", object: "en")
+        } else {
+            NSUserDefaults.standardUserDefaults().setObject("nl", forKey: "selectedLanguage")
+            NSNotificationCenter.defaultCenter().postNotificationName("LANGUAGE_WILL_CHANGE", object: "nl")
         }
     }
     
-
+    func languageDidChangeNotification(notification:NSNotification) {
+        print("[Collection] Language did change")
+        let language = NSUserDefaults.standardUserDefaults().valueForKey("selectedLanguage") as? String
+        print(language)
+        
+        if language == "nl" {
+            languageBtn.title = "English"
+        } else {
+            languageBtn.title = "Dutch"
+        }
+        
+        backButton = UIBarButtonItem(title: NSLocalizedString("back", comment:""), style: UIBarButtonItemStyle.Plain, target: nil, action:nil)
+        self.navigationItem.backBarButtonItem = backButton
+    }
+    
+    func checkLanguage() {
+        print("[Collection] check language")
+        
+        let preferredLanguage = NSUserDefaults.standardUserDefaults().valueForKey("selectedLanguage") as? String
+        print(preferredLanguage)
+        
+        if preferredLanguage == "nl" {
+            languageBtn.title = NSLocalizedString("English", comment:"")
+        } else {
+            languageBtn.title = NSLocalizedString("Dutch", comment:"")
+        }
+    }
+    
+    
+    // Data persist func
     func saveObjects() {
         let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(objects, toFile: Object.ArchiveURL.path!)
         if !isSuccessfulSave {
@@ -141,6 +157,305 @@ class ObjectCollectionViewController: UICollectionViewController {
     
     func loadObjects() -> [Object]? {
         return NSKeyedUnarchiver.unarchiveObjectWithFile(Object.ArchiveURL.path!) as? [Object]
+    }
+    
+    func loadRSSObjects() {
+        if Reachability.isConnectedToNetwork() == true {
+            self.execRequest("zmcms", password:"zmcms", translation: self.englishParse)
+        } else {
+            refreshControl.attributedTitle = NSAttributedString(string: NSLocalizedString("No_Internet_Connection", comment:""))
+        }
+    }
+    
+    func execRequest(username: String, password: String, translation: Bool) {
+        
+        print("Exec request.")
+        /* Request with HTTP authentication */
+        let username = "zmcms"
+        let password = "zmcms"
+        let loginString = NSString(format: "%@:%@", username, password)
+        let loginData: NSData = loginString.dataUsingEncoding(NSUTF8StringEncoding)!
+        let base64LoginString = loginData.base64EncodedStringWithOptions([])
+        
+        var zm_url = NSURL(string: "http://zm-cms.intk.com/nl/test-folder/app-sync/aggregator/RSS")
+        if translation {
+            zm_url = NSURL(string: "http://zm-cms.intk.com/en/test-folder/app-sync/aggregator/RSS")
+        }
+        
+        let urlRequest = NSMutableURLRequest(URL: zm_url!)
+        urlRequest.HTTPMethod = "POST"
+        urlRequest.setValue("Basic \(base64LoginString)", forHTTPHeaderField: "Authorization")
+        
+        let queue:NSOperationQueue = NSOperationQueue()
+        NSURLConnection.sendAsynchronousRequest(urlRequest, queue: queue) {
+            (response, data, error) -> Void in
+            self.xmlParser = NSXMLParser(data: data!)
+            self.xmlParser.delegate = self
+            self.xmlParser.parse()
+        }
+    }
+    
+    func getEnglishContent() {
+        self.englishParse = true
+        print("Finished parsing. Get translation content.")
+        self.handleRefresh(self.refreshControl)
+    }
+    
+    //MARK: NSXMLParserDelegate
+    func parser(parser: NSXMLParser,
+        didStartElement elementName: String,
+        namespaceURI: String?,
+        qualifiedName: String?,
+        attributes attributeDict: [String : String]) {
+            if elementName == "title" {
+                entryTitle = String()
+                currentParsedElement = "title"
+            }
+            
+            if elementName == "description" {
+                entryDescription = String()
+                currentParsedElement = "description"
+            }
+            
+            if elementName == "object_number" {
+                entryObjectNumber = String()
+                currentParsedElement = "object_number"
+            }
+            
+            if elementName == "lead_media" {
+                entryImageURL = String()
+                currentParsedElement = "lead_media"
+            }
+            
+            if elementName == "currentLocation" {
+                entryCurrentLocation = String()
+                currentParsedElement = "currentLocation"
+            }
+            
+            if elementName == "content:encoded" {
+                entryStory = String()
+                currentParsedElement = "story"
+            }
+            
+            if elementName == "dc:date" {
+                entrySyncDate = String()
+                currentParsedElement = "syncDate"
+            }
+    }
+    
+    func parser(parser: NSXMLParser,
+        foundCharacters string: String){
+            if currentParsedElement == "title" {
+                entryTitle = entryTitle + string
+            }
+            
+            if currentParsedElement == "description" {
+                entryDescription = entryDescription + string
+            }
+            
+            if currentParsedElement == "object_number" {
+                entryObjectNumber = entryObjectNumber + string
+            }
+            
+            if currentParsedElement == "lead_media" {
+                entryImageURL = entryImageURL + string
+            }
+            
+            if currentParsedElement == "currentLocation" {
+                entryCurrentLocation = entryCurrentLocation + string
+            }
+            
+            if currentParsedElement == "content:encoded" {
+                entryStory = entryStory + string
+            }
+            
+            if currentParsedElement == "syncDate" {
+                entrySyncDate = entrySyncDate + string
+            }
+    }
+    
+    
+    
+    func parser(parser: NSXMLParser,
+        didEndElement elementName: String,
+        namespaceURI: String?,
+        qualifiedName qName: String?){
+            if elementName == "title" {
+                entryDictionary["title"] = entryTitle
+            }
+            
+            if elementName == "description" {
+                entryDictionary["description"] = entryDescription
+            }
+            
+            if elementName == "object_number" {
+                entryDictionary["object_number"] = entryObjectNumber
+            }
+            
+            if elementName == "lead_media" {
+                entryDictionary["lead_media"] = entryImageURL
+            }
+            
+            if elementName == "currentLocation" {
+                entryDictionary["currentLocation"] = entryCurrentLocation
+            }
+            
+            if elementName == "content:encoded" {
+                if !self.englishParse {
+                    entryDictionary["story"] = "Zwartvoet Indianen zijn van oorsprong jagers. Voor hun kleding en gebruiksvoorwerpen maken ze gebruik van materialen die voorhanden zijn. Deze jurk is gemaakt van leer. Het is een kledingstuk voor dagelijks gebruik. De jurk is versierd met kralen, franjes en belletjes. Oorspronkelijk is de jurk waarschijnlijk ook met hermelijnbont gedecoreerd geweest, maar hiervan zijn geen resten meer over. Met de komst van Europese kolonisten komt vanaf de 19e eeuw ook westerse kleding beschikbaar voor de Zwartvoet. De traditionele leren kleding wordt sindsdien vooral nog op bijzondere gelegenheden gedragen."
+                } else {
+                    entryDictionary["story"] = "Zwartvoet Indianen originating hunters. This dress is made of leather. It is a garment for everyday use. The dress is decorated with beads, tassels and bells. Originally, the dress probably been decorated with ermine fur, but these are no residues left. With the arrival of European settlers coming from the 19th century, western clothing available for the Blackfeet. The traditional leather clothing since then is mostly still worn on special occasions."
+                }
+            }
+            
+            if elementName == "dc:date" {
+                entryDictionary["syncDate"] = entrySyncDate
+                entriesArray.append(entryDictionary)
+                
+                let photoName = "defaultPhoto"
+                let defaultBlankPhoto = UIImage(named: photoName)!
+                
+                if entryDictionary["description"] == nil {
+                    entryDictionary["description"] = ""
+                }
+                
+                if entryDictionary["object_number"] == "None" {
+                    entryDictionary["object_number"] = ""
+                }
+                
+                // only add if object_number not in objects array
+                // if object_number exists - update object instead
+                
+                let obj = findObject(entryDictionary["object_number"]!)
+                if obj != nil {
+                    
+                    if self.englishParse {
+                        // Update english fields
+                        obj?.title_translation = entryDictionary["title"]!
+                        obj?.objectDescription_translation = entryDictionary["description"]!
+                        obj?.story_translation = entryDictionary["story"]!
+                        obj?.location_translation = entryDictionary["currentLocation"]!
+                    } else {
+                        // Regular fields
+                        obj?.name = entryDictionary["title"]!
+                        obj?.objectNumber = entryDictionary["object_number"]!
+                        obj?.objectDescription = entryDictionary["description"]!
+                    
+                        // Extra fields that need to be synced
+                        obj?.story = entryDictionary["story"]!
+                        obj?.location = entryDictionary["currentLocation"]!
+                        
+                        if obj?.imageURL != entryDictionary["lead_media"]! {
+                            // Update new lead media - image is different
+                            obj?.imageURL = entryDictionary["lead_media"]!
+                            loadImage(entryDictionary["lead_media"]!, object: obj!)
+                        } else {
+                            // do not update - image is the same
+                        }
+                    }
+
+                    obj?.syncDate = entryDictionary["syncDate"]!
+                } else {
+                    if !self.englishParse {
+                        if entryDictionary["lead_media"]! != "" {
+                            let createdObject = Object(name: entryDictionary["title"]!, photo: defaultBlankPhoto, objectNumber:entryDictionary["object_number"]!, description:entryDictionary["description"]!, story:entryDictionary["story"]!, location:entryDictionary["currentLocation"]!, syncDate:entryDictionary["syncDate"]!, imageURL: entryDictionary["lead_media"]!, title_translation: "", objectDescription_translation:"", location_translation:"", story_translation:"")!
+                        
+                            loadImage(entryDictionary["lead_media"]!, object:createdObject)
+                        
+                            objects.append(createdObject)
+                        } else {
+                            // do not create if there's no image
+                        }
+                    } else {
+                        // do not create if english
+                    }
+                }
+            }
+    }
+    
+    func parserDidEndDocument(parser: NSXMLParser) {
+        if !self.englishParse {
+            self.getEnglishContent()
+        } else {
+            saveObjects()
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                self.collectionView?.reloadData()
+            })
+        }
+    }
+    
+    func findObject(object_number: String) -> Object? {
+        for object in objects {
+            let trimmedObjectNumber = object.objectNumber.stringByTrimmingCharactersInSet(
+                NSCharacterSet.whitespaceAndNewlineCharacterSet()
+            )
+            
+            if trimmedObjectNumber == object_number {
+                return object
+            }
+        }
+        return nil
+    }
+    
+    func loadImage(urlString:String, object:Object) {
+        let username = "zmcms"
+        let password = "zmcms"
+        let loginString = NSString(format: "%@:%@", username, password)
+        let loginData: NSData = loginString.dataUsingEncoding(NSUTF8StringEncoding)!
+        let base64LoginString = loginData.base64EncodedStringWithOptions([])
+        let imgURL: NSURL = NSURL(string: urlString)!
+        
+        let request = NSMutableURLRequest(URL: imgURL)
+        request.HTTPMethod = "POST"
+        request.setValue("Basic \(base64LoginString)", forHTTPHeaderField: "Authorization")
+        
+        let object = object
+        
+        let session = NSURLSession.sharedSession()
+        let task = session.dataTaskWithRequest(request){
+            (data, response, error) -> Void in
+            
+            if (error == nil && data != nil) {
+                func display_image() {
+                    let new_image = UIImage(data: data!)
+                    object.photo = new_image
+                    
+                    //TODO: Performance bottleneck for first load
+                    self.saveObjects()
+                    self.collectionView?.reloadData() //TODO: there must be a more efficient way of doing this.
+                }
+                dispatch_sync(dispatch_get_main_queue(), display_image)
+            } else {
+                // Do something with the error.
+            }
+        }
+        task.resume()
+    }
+    //  Pull to refresh
+    func handleRefresh(refreshControl: UIRefreshControl) {
+        print("Refresh control")
+        
+        if Reachability.isConnectedToNetwork() == true {
+            entriesArray = Array()
+            
+            //objects = [Object]()
+            
+            self.execRequest("zmcms", password:"zmcms", translation: self.englishParse)
+            let now = NSDate()
+            let updateString = NSLocalizedString("Last_Updated_at", comment:"") + " " + self.getFormattedStringFromDate(now)
+            refreshControl.attributedTitle = NSAttributedString(string: updateString)
+            
+        } else {
+            refreshControl.attributedTitle = NSAttributedString(string: NSLocalizedString("No_Internet_Connection", comment:""))
+        }
+        
+        refreshControl.endRefreshing()
+    }
+    
+    func getFormattedStringFromDate(aDate: NSDate) -> String{
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateStyle = .MediumStyle
+        return self.dateFormatter.stringFromDate(aDate)
     }
 
 }

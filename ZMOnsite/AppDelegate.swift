@@ -16,7 +16,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "languageWillChange:", name: "LANGUAGE_WILL_CHANGE", object: nil)
+
+        let targetLang = NSUserDefaults.standardUserDefaults().objectForKey("selectedLanguage") as? String
+        
+        NSBundle.setLanguage((targetLang != nil) ? targetLang : "en")
         return true
+    }
+    
+    func languageWillChange(notification:NSNotification) {
+        let targetLang = notification.object as! String
+        NSUserDefaults.standardUserDefaults().setObject(targetLang, forKey: "selectedLanguage")
+        NSBundle.setLanguage(targetLang)
+        NSNotificationCenter.defaultCenter().postNotificationName("LANGUAGE_DID_CHANGE", object: targetLang)
     }
 
     func applicationWillResignActive(application: UIApplication) {
