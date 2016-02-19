@@ -62,11 +62,24 @@ class PinterestLayout: UICollectionViewLayout {
     var currentLayout: String = ""
     
     func preparePortraitLayout() {
+        
         var insets = collectionView!.contentInset
         insets.top = 80.0
+        insets.left = 8.0
         collectionView!.contentInset = insets
         contentHeight = CGFloat(0.0)
         contentWidth = CGRectGetWidth(collectionView!.bounds) - (insets.left + insets.right)
+        
+        if let _ = self.delegate as? CategoriesCollectionViewController {
+            numberOfRows = 1
+            numberOfColumns = 3
+            var insets = collectionView!.contentInset
+            insets.top = 200.0
+            insets.bottom = 5.0
+            collectionView!.contentInset = insets
+            contentHeight = CGFloat(0.0)
+            contentWidth = CGRectGetWidth(collectionView!.bounds) - (insets.left + insets.right)
+        }
         
         self.collectionView!.alwaysBounceHorizontal = false
         self.collectionView!.alwaysBounceVertical = true
@@ -126,6 +139,18 @@ class PinterestLayout: UICollectionViewLayout {
         contentWidth = CGFloat(0.0)
         
         self.collectionView!.alwaysBounceVertical = false
+        
+        if let _ = self.delegate as? CategoriesCollectionViewController {
+            numberOfRows = 1
+            numberOfColumns = 3
+            
+            var insets = collectionView!.contentInset
+            insets.left = 200.0
+            collectionView!.contentInset = insets
+            
+            contentHeight = CGRectGetHeight(collectionView!.bounds) - (insets.top + insets.bottom)
+            contentWidth = CGFloat(0.0)
+        }
         
         cache = [PinterestLayoutAttributes]()
         

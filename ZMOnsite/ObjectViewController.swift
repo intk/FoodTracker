@@ -250,8 +250,8 @@ class ObjectViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         locationFieldLabel.text = NSLocalizedString("location", comment:"")
         storyFieldLabel.text = NSLocalizedString("story", comment:"")
         
-        //let backButton = UIBarButtonItem(title: NSLocalizedString("back", comment:""), style: UIBarButtonItemStyle.Plain, target: nil, action:nil)
-        //objectCollectionViewController!.navigationItem.backBarButtonItem = backButton
+        let backButton = UIBarButtonItem(title: NSLocalizedString("back", comment:""), style: UIBarButtonItemStyle.Plain, target: nil, action:nil)
+        objectCollectionViewController!.navigationItem.backBarButtonItem = backButton
         
         if language == "nl" {
             languageBtn.title = "English"

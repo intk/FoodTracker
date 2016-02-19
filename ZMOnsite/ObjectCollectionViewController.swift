@@ -34,6 +34,7 @@ class ObjectCollectionViewController: UICollectionViewController, NSXMLParserDel
     var backButton: UIBarButtonItem!
     
     var currentCollection: String!
+    var currentCollectionName: String!
     
     var test_dict: [String: [Object]]! = [String: [Object]]()
     
@@ -74,6 +75,11 @@ class ObjectCollectionViewController: UICollectionViewController, NSXMLParserDel
         collectionView!.backgroundColor = UIColor.whiteColor()
         collectionView!.contentInset = UIEdgeInsets(top: 23, left: 5, bottom: 10, right: 5)
         collectionView!.delaysContentTouches = false
+        
+        if currentCollectionName != "" {
+            self.navigationItem.title = currentCollectionName
+        }
+        
         checkLanguage()
     }
     

@@ -58,7 +58,6 @@ class CategoriesCollectionViewController: UICollectionViewController, NSXMLParse
         self.dateFormatter.timeStyle = NSDateFormatterStyle.LongStyle
         
         // Data
-        
         do {
             if let savedCategories = try loadCategories() {
                 categories += savedCategories
@@ -80,7 +79,6 @@ class CategoriesCollectionViewController: UICollectionViewController, NSXMLParse
             //
         }
 
-        
         if let layout = collectionView?.collectionViewLayout as? PinterestLayout {
             layout.delegate = self
         }
@@ -93,6 +91,12 @@ class CategoriesCollectionViewController: UICollectionViewController, NSXMLParse
         collectionView!.backgroundColor = UIColor.whiteColor()
         collectionView!.contentInset = UIEdgeInsets(top: 23, left: 5, bottom: 10, right: 5)
         collectionView!.delaysContentTouches = false
+        
+        // Navitation bar
+        self.navigationItem.title = NSLocalizedString("Exhibitions", comment: "")
+        let backButton = UIBarButtonItem(title: NSLocalizedString("back", comment:""), style: UIBarButtonItemStyle.Plain, target: nil, action:nil)
+        self.navigationItem.backBarButtonItem = backButton
+        
         // Language
         checkLanguage()
     }
@@ -151,8 +155,6 @@ class CategoriesCollectionViewController: UICollectionViewController, NSXMLParse
             self.xmlParser.parse()
             self.loadImages()
         }
-        
-        
     }
     
     func loadImages() {
@@ -385,7 +387,7 @@ class CategoriesCollectionViewController: UICollectionViewController, NSXMLParse
         let loginString = NSString(format: "%@:%@", username, password)
         let loginData: NSData = loginString.dataUsingEncoding(NSUTF8StringEncoding)!
         let base64LoginString = loginData.base64EncodedStringWithOptions([])
-        let imgURL: NSURL = NSURL(string: urlString+"/@@images/image/large")!
+        let imgURL: NSURL = NSURL(string: urlString+"/@@images/image/sync")!
         
         let request = NSMutableURLRequest(URL: imgURL)
         request.HTTPMethod = "POST"
@@ -438,6 +440,7 @@ class CategoriesCollectionViewController: UICollectionViewController, NSXMLParse
             languageBtn.title = "Dutch"
         }
         
+        self.navigationItem.title = NSLocalizedString("Exhibitions", comment: "")
         backButton = UIBarButtonItem(title: NSLocalizedString("back", comment:""), style: UIBarButtonItemStyle.Plain, target: nil, action:nil)
         self.navigationItem.backBarButtonItem = backButton
     }
@@ -524,13 +527,11 @@ extension CategoriesCollectionViewController {
                 let indexPath = collectionView!.indexPathForCell(selectedObjectCell)!
                 let selectedCategory = categories[indexPath.row]
                 let selectedLink = selectedCategory.link
-                ObjectViewController.currentCollection = selectedLink
+                let selectedName = selectedCategory.name
                 
+                ObjectViewController.currentCollection = selectedLink
+                ObjectViewController.currentCollectionName = selectedName
                 ObjectViewController.test_dict = self.collections
-                /*let collectionExists = self.collections[selectedLink] != nil
-                if collectionExists {
-                    ObjectViewController.objects = self.collections[selectedLink]!
-                }*/
             }
         }
         else {
