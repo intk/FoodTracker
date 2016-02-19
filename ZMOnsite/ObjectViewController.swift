@@ -12,9 +12,11 @@ import AVFoundation
 class ObjectViewController: UIViewController, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     // MARK: Properties
     
+    
+    @IBOutlet weak var imageHeight: NSLayoutConstraint!
+    
     // Labels with values
     @IBOutlet weak var photoImageView: UIImageView!
-    @IBOutlet weak var imageHeight: NSLayoutConstraint!
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var objectNumberLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UILabel!
@@ -40,9 +42,12 @@ class ObjectViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     @IBOutlet weak var fieldsStackView: UIStackView!
     @IBOutlet weak var containerStackView: UIStackView!
     @IBOutlet weak var outerView: UIView!
+    @IBOutlet weak var imageWrapperView: UIView!
     
     var currentHeight: CGFloat = 0.0
     var changeHeight: Bool = false
+    
+    @IBOutlet weak var imageTop: NSLayoutConstraint!
     
     deinit{
         NSNotificationCenter.defaultCenter().removeObserver(self)
@@ -76,23 +81,27 @@ class ObjectViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        objectCollectionViewController?.handleRefresh((objectCollectionViewController?.refreshControl)!)
+        //objectCollectionViewController?.handleRefresh((objectCollectionViewController?.refreshControl)!)
         switchLanguage()
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        self.changeHeight = true
-        self.view.layoutIfNeeded()
+        //self.changeHeight = true
+        self.outerView.layoutIfNeeded()
     }
     
     override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
+        //super.viewDidLayoutSubviews()
         fixScrollableView()
+  
+        if !self.changeHeight {
+            let height = heightForImage()
+            self.imageHeight.constant = height
+            self.currentHeight = height
+        }
         
-        let height = heightForImage()
-        self.imageHeight.constant = height
-        self.currentHeight = height
+        self.changeHeight = true
     }
     
     override func didRotateFromInterfaceOrientation(fromInterfaceOrientation: UIInterfaceOrientation) {
@@ -131,6 +140,8 @@ class ObjectViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         if let object = object {
             showObjectFields(object)
         }
+        
+        fixScrollableView()
     }
     
     func switchLanguage() {
@@ -268,6 +279,7 @@ class ObjectViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(scrollView)
+        
         view.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|[scrollView]|", options: .AlignAllCenterX, metrics: nil, views: ["scrollView": scrollView]))
         view.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|[scrollView]|", options: .AlignAllCenterX, metrics: nil, views: ["scrollView": scrollView]))
         scrollView.addSubview(containerStackView)

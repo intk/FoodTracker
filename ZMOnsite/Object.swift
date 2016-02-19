@@ -23,11 +23,13 @@ class Object: NSObject, NSCoding {
     var location_translation: String
     var imageURL: String
     var syncDate: String
+    var link: String
     
     // MARK: Archiving Paths
     
     static let DocumentsDirectory = NSFileManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
     static let ArchiveURL = DocumentsDirectory.URLByAppendingPathComponent("objects")
+    static let CategoriesArchiveURL = DocumentsDirectory.URLByAppendingPathComponent("categories")
     
     // MARK: Types
     
@@ -44,12 +46,13 @@ class Object: NSObject, NSCoding {
         static let locationTranslation = "location_translation"
         static let imageURLKey = "imageURL"
         static let syncDate = "syncDate"
+        static let linkKey = "link"
     }
 
     // MARK: Initialization
     
     init?(name: String, photo: UIImage?, objectNumber: String, description: String, story: String, location: String, syncDate: String, imageURL: String,
-        title_translation: String, objectDescription_translation: String, location_translation: String, story_translation: String) {
+        title_translation: String, objectDescription_translation: String, location_translation: String, story_translation: String, link: String) {
         // Initialize stored properties.
         self.name = name
         self.photo = photo
@@ -58,6 +61,7 @@ class Object: NSObject, NSCoding {
         self.story = story
         self.location = location
         self.imageURL = imageURL
+        self.link = link
         self.syncDate = ""
         
         self.title_translation = ""
@@ -88,6 +92,7 @@ class Object: NSObject, NSCoding {
         aCoder.encodeObject(location_translation, forKey: PropertyKey.locationTranslation)
         aCoder.encodeObject(imageURL, forKey: PropertyKey.imageURLKey)
         aCoder.encodeObject(syncDate, forKey: PropertyKey.syncDate)
+        aCoder.encodeObject(link, forKey: PropertyKey.linkKey)
     }
     
     required convenience init?(coder aDecoder: NSCoder) {
@@ -109,10 +114,11 @@ class Object: NSObject, NSCoding {
         let imageURL = aDecoder.decodeObjectForKey(PropertyKey.imageURLKey) as! String
         let syncDate = aDecoder.decodeObjectForKey(PropertyKey.syncDate) as! String
         
+        let link = aDecoder.decodeObjectForKey(PropertyKey.linkKey) as! String
         
         // Must call designated initializer.
         self.init(name: name, photo: photo, objectNumber:objectNumber, description: objectDescription, story: story, location: location, syncDate: syncDate, imageURL: imageURL,
-            title_translation: title_translation, objectDescription_translation: objectDescription_translation, location_translation: location_translation, story_translation: story_translation)
+            title_translation: title_translation, objectDescription_translation: objectDescription_translation, location_translation: location_translation, story_translation: story_translation, link:link)
     }
 
 }

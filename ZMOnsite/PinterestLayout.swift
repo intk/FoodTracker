@@ -59,6 +59,8 @@ class PinterestLayout: UICollectionViewLayout {
     private var contentHeight: CGFloat = 0.0
     private var contentWidth: CGFloat = 0.0
     
+    var currentLayout: String = ""
+    
     func preparePortraitLayout() {
         var insets = collectionView!.contentInset
         insets.top = 80.0
@@ -66,7 +68,12 @@ class PinterestLayout: UICollectionViewLayout {
         contentHeight = CGFloat(0.0)
         contentWidth = CGRectGetWidth(collectionView!.bounds) - (insets.left + insets.right)
         
+        self.collectionView!.alwaysBounceHorizontal = false
+        self.collectionView!.alwaysBounceVertical = true
+        
+        
         cache = [PinterestLayoutAttributes]()
+        
         // 1
         if cache.isEmpty {
             // 2
@@ -87,8 +94,7 @@ class PinterestLayout: UICollectionViewLayout {
                 let width = columnWidth - cellPadding * 2
                 let photoHeight = delegate.collectionView(collectionView!, heightForPhotoAtIndexPath: indexPath,
                     withWidth:width)
-                //let annotationHeight = delegate.collectionView(collectionView!,
-                //  heightForAnnotationAtIndexPath: indexPath, withWidth: width)
+                
                 let height = cellPadding + photoHeight //+ annotationHeight + cellPadding
                 let frame = CGRect(x: xOffset[column], y: yOffset[column], width: columnWidth, height: height)
                 let insetFrame = CGRectInset(frame, cellPadding, cellPadding)
@@ -119,9 +125,10 @@ class PinterestLayout: UICollectionViewLayout {
         contentHeight = CGRectGetHeight(collectionView!.bounds) - (insets.top + insets.bottom)
         contentWidth = CGFloat(0.0)
         
-        self.collectionView!.alwaysBounceVertical = true
+        self.collectionView!.alwaysBounceVertical = false
         
         cache = [PinterestLayoutAttributes]()
+        
         // 1
         if cache.isEmpty {
             // 2
@@ -168,12 +175,9 @@ class PinterestLayout: UICollectionViewLayout {
     }
     
     override func prepareLayout() {
-        //print("prepare layout")
-        if (UIDevice.currentDevice().orientation ==  .Portrait) {
-            currentOrientation = .Portrait
+        if (UIDevice.currentDevice().orientation ==  .Portrait || UIDevice.currentDevice().orientation == .PortraitUpsideDown) {
             self.preparePortraitLayout()
         } else {
-            currentOrientation = UIDevice.currentDevice().orientation
             self.prepareLandscapeLayout()
         }
     }

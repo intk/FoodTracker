@@ -10,7 +10,7 @@ import UIKit
 
 class AnnotatedPhotoCell: UICollectionViewCell {
     
-    @IBOutlet private weak var imageView: UIImageView!
+    @IBOutlet weak var imageView: UIImageView!
     @IBOutlet private weak var imageWidth: NSLayoutConstraint!
     @IBOutlet private weak var imageHeight: NSLayoutConstraint!
     
