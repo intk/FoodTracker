@@ -13,7 +13,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "languageWillChange:", name: "LANGUAGE_WILL_CHANGE", object: nil)
@@ -51,6 +50,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+        
+        let navigationController = self.window?.rootViewController as! UINavigationController
+        if navigationController.viewControllers.count > 0 {
+            let controller = navigationController.viewControllers[0] as? CategoriesCollectionViewController
+            if controller != nil {
+                controller?.saveCategories()
+            }
+        }
+        
+        if navigationController.viewControllers.count > 1 {
+            let objectsController = navigationController.viewControllers[1] as? ObjectCollectionViewController
+            if objectsController != nil {
+                objectsController?.saveObjects()
+            }
+        }
     }
 
 

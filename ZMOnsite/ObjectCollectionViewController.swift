@@ -40,6 +40,15 @@ class ObjectCollectionViewController: UICollectionViewController, NSXMLParserDel
     
     // Pull to refresh
     var refreshControl: UIRefreshControl!
+    var inactiveTimer: NSTimer!
+    let inactiveLimit: NSTimeInterval = 60.0
+    var selectedCell: AnnotatedPhotoCell!
+    
+    // Global variables
+    var isInit: Bool = false
+    var categoriesViewController: CategoriesCollectionViewController?
+    
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     // Language button
     @IBOutlet weak var languageBtn: UIBarButtonItem!
@@ -48,20 +57,28 @@ class ObjectCollectionViewController: UICollectionViewController, NSXMLParserDel
         NSNotificationCenter.defaultCenter().removeObserver(self)
     }
     
+    // Views
+    @IBOutlet var objCollectionView: ObjectCollectionView!
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "languageDidChangeNotification:", name: "LANGUAGE_DID_CHANGE", object: nil)
+        objCollectionView.navigationController = navigationController
+        objCollectionView.initTimer()
         
         self.dateFormatter.dateStyle = NSDateFormatterStyle.ShortStyle
         self.dateFormatter.timeStyle = NSDateFormatterStyle.LongStyle
 
         // Do any additional setup after loading the view.
         // Load any saved Objects, otherwise load sample data.
-        
         let collectionExists = test_dict[currentCollection] != nil
+
         if collectionExists {
             objects = test_dict[currentCollection]!
         } else {
+            isInit = true
+            activityIndicator.hidden = false
             loadRSSObjects()
         }
         
@@ -86,18 +103,37 @@ class ObjectCollectionViewController: UICollectionViewController, NSXMLParserDel
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
         NSURLCache.sharedURLCache().removeAllCachedResponses()
+        objCollectionView.invalidateTimer()
     }
     
-    override func collectionView(collectionView: UICollectionView, didHighlightItemAtIndexPath indexPath: NSIndexPath) {
-        /*let cell = collectionView.cellForItemAtIndexPath(indexPath) as! AnnotatedPhotoCell
-        let imageView = cell.imageView
-        imageView.alpha = 0.8*/
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+    }
+    
+    override func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        let cell = collectionView.cellForItemAtIndexPath(indexPath) as! AnnotatedPhotoCell
+        selectedCell = cell
+    }
+    
+    override func viewDidDisappear(animated: Bool) {
+        super.viewDidDisappear(animated)
+        let cells = collectionView!.indexPathsForVisibleItems()
+        for index in cells {
+            let cell = collectionView!.cellForItemAtIndexPath(index) as! AnnotatedPhotoCell
+            cell.hidden = false
+        }
     }
     
     override func collectionView(collectionView: UICollectionView, didUnhighlightItemAtIndexPath indexPath: NSIndexPath) {
-        /*let cell = collectionView.cellForItemAtIndexPath(indexPath) as! AnnotatedPhotoCell
+        let cell = collectionView.cellForItemAtIndexPath(indexPath) as! AnnotatedPhotoCell
         let imageView = cell.imageView
-        imageView.alpha = 1*/
+        imageView.alpha = 1
+    }
+    
+    override func collectionView(collectionView: UICollectionView, didHighlightItemAtIndexPath indexPath: NSIndexPath) {
+        let cell = collectionView.cellForItemAtIndexPath(indexPath) as! AnnotatedPhotoCell
+        let imageView = cell.imageView
+        imageView.alpha = 0.6
     }
     
     override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
@@ -124,7 +160,7 @@ class ObjectCollectionViewController: UICollectionViewController, NSXMLParserDel
             }
         }
         else if segue.identifier == "AddItem" {
-            print("Adding new Object.")
+            print("[Collection] Adding new Object.")
         }
     }
     
@@ -147,7 +183,6 @@ class ObjectCollectionViewController: UICollectionViewController, NSXMLParserDel
     func languageDidChangeNotification(notification:NSNotification) {
         print("[Collection] Language did change")
         let language = NSUserDefaults.standardUserDefaults().valueForKey("selectedLanguage") as? String
-        print(language)
         
         if language == "nl" {
             languageBtn.title = "English"
@@ -169,14 +204,19 @@ class ObjectCollectionViewController: UICollectionViewController, NSXMLParserDel
         } else {
             languageBtn.title = NSLocalizedString("Dutch", comment:"")
         }
+        
+        backButton = UIBarButtonItem(title: NSLocalizedString("back", comment:""), style: UIBarButtonItemStyle.Plain, target: nil, action:nil)
+        self.navigationItem.backBarButtonItem = backButton
     }
     
     
     // Data persist func
     func saveObjects() {
         let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(test_dict, toFile: Object.ArchiveURL.path!)
+        self.categoriesViewController?.collections = test_dict
+        
         if !isSuccessfulSave {
-            print("Failed to save Objects...")
+            print("[Collection] Failed to save Objects...")
         }
     }
     
@@ -194,7 +234,7 @@ class ObjectCollectionViewController: UICollectionViewController, NSXMLParserDel
     
     func execRequest(username: String, password: String, translation: Bool) {
         
-        print("Exec request.")
+        print("[Collection] Exec HTTP request.")
         /* Request with HTTP authentication */
         let username = "zmcms"
         let password = "zmcms"
@@ -227,17 +267,24 @@ class ObjectCollectionViewController: UICollectionViewController, NSXMLParserDel
     func loadImages() {
         for (index, object) in objects.enumerate() {
             if index == objects.count-1 {
-                loadImage(object.imageURL, object: object, final: true)
+                print("[Collection] Load last image.")
+                if object.imageChanged || self.isInit {
+                    loadImage(object.imageURL, object: object, final: true)
+                }
+                //self.collectionView?.reloadData()
             } else {
-                loadImage(object.imageURL, object: object, final: false)
+                if object.imageChanged || self.isInit {
+                    loadImage(object.imageURL, object: object, final: false)
+                }
             }
         }
     }
     
     func getEnglishContent() {
         self.englishParse = true
-        print("Finished parsing. Get translation content.")
+        print("[Collection] Finished parsing. Get translated content.")
         self.handleRefresh(self.refreshControl)
+
     }
     
     //MARK: NSXMLParserDelegate
@@ -313,8 +360,6 @@ class ObjectCollectionViewController: UICollectionViewController, NSXMLParserDel
             }
     }
     
-    
-    
     func parser(parser: NSXMLParser,
         didEndElement elementName: String,
         namespaceURI: String?,
@@ -364,7 +409,6 @@ class ObjectCollectionViewController: UICollectionViewController, NSXMLParserDel
                 
                 let obj = findObject(entryDictionary["object_number"]!)
                 if obj != nil {
-                    
                     if self.englishParse {
                         // Update english fields
                         obj?.title_translation = entryDictionary["title"]!
@@ -384,6 +428,7 @@ class ObjectCollectionViewController: UICollectionViewController, NSXMLParserDel
                         if obj?.imageURL != entryDictionary["lead_media"]! {
                             // Update new lead media - image is different
                             obj?.imageURL = entryDictionary["lead_media"]!
+                            obj?.imageChanged = true
                         } else {
                             // do not update - image is the same
                         }
@@ -393,7 +438,7 @@ class ObjectCollectionViewController: UICollectionViewController, NSXMLParserDel
                 } else {
                     if !self.englishParse {
                         if entryDictionary["lead_media"]! != "" {
-                            let createdObject = Object(name: entryDictionary["title"]!, photo: defaultBlankPhoto, objectNumber:entryDictionary["object_number"]!, description:entryDictionary["description"]!, story:entryDictionary["story"]!, location:entryDictionary["currentLocation"]!, syncDate:entryDictionary["syncDate"]!, imageURL: entryDictionary["lead_media"]!, title_translation: "", objectDescription_translation:"", location_translation:"", story_translation:"", link:"")!
+                            let createdObject = Object(name: entryDictionary["title"]!, photo: defaultBlankPhoto, objectNumber:entryDictionary["object_number"]!, description:entryDictionary["description"]!, story:entryDictionary["story"]!, location:entryDictionary["currentLocation"]!, syncDate:entryDictionary["syncDate"]!, imageURL: entryDictionary["lead_media"]!, title_translation: "", objectDescription_translation:"", location_translation:"", story_translation:"", link:"", imageChanged: false)!
                             objects.append(createdObject)
                         } else {
                             // do not create if there's no image
@@ -403,6 +448,10 @@ class ObjectCollectionViewController: UICollectionViewController, NSXMLParserDel
                     }
                 }
             }
+    }
+    
+    func dismissViewController() {
+        navigationController?.popToRootViewControllerAnimated(true)
     }
     
     func stripHTMLcontent(string: String) -> String {
@@ -420,6 +469,8 @@ class ObjectCollectionViewController: UICollectionViewController, NSXMLParserDel
         } else {
             test_dict[currentCollection] = objects
             saveObjects()
+            
+            self.englishParse = false
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
                 self.collectionView?.reloadData()
             })
@@ -461,11 +512,15 @@ class ObjectCollectionViewController: UICollectionViewController, NSXMLParserDel
                 func display_image() {
                     let new_image = UIImage(data: data!)
                     object.photo = new_image
+                    object.imageChanged = false
                     
-                    if final {
+                    if final && self.isInit {
+                        print("[Collection] Final image downloaded and init. Reload data.")
                         self.saveObjects()
+                        self.collectionView?.reloadData()
+                        self.isInit = false
+                        self.activityIndicator.hidden = true
                     }
-                    self.collectionView?.reloadData()
                 }
                 dispatch_sync(dispatch_get_main_queue(), display_image)
             } else {
@@ -476,13 +531,12 @@ class ObjectCollectionViewController: UICollectionViewController, NSXMLParserDel
     }
     //  Pull to refresh
     func handleRefresh(refreshControl: UIRefreshControl) {
-        print("Refresh control")
+        print("[Collection] Refresh control")
         
         if Reachability.isConnectedToNetwork() == true {
             entriesArray = Array()
             
             //objects = [Object]()
-            
             self.execRequest("zmcms", password:"zmcms", translation: self.englishParse)
             let now = NSDate()
             let updateString = NSLocalizedString("Last_Updated_at", comment:"") + " " + self.getFormattedStringFromDate(now)
@@ -491,8 +545,8 @@ class ObjectCollectionViewController: UICollectionViewController, NSXMLParserDel
         } else {
             refreshControl.attributedTitle = NSAttributedString(string: NSLocalizedString("No_Internet_Connection", comment:""))
         }
-        
         refreshControl.endRefreshing()
+        //self.categoriesViewController?.handleRefresh((self.categoriesViewController?.refreshControl)!)
     }
     
     func getFormattedStringFromDate(aDate: NSDate) -> String{

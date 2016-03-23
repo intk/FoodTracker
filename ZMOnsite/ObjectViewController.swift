@@ -9,6 +9,9 @@
 import UIKit
 import AVFoundation
 
+
+
+
 class ObjectViewController: UIViewController, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     // MARK: Properties
     
@@ -43,13 +46,22 @@ class ObjectViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     @IBOutlet weak var containerStackView: UIStackView!
     @IBOutlet weak var outerView: UIView!
     @IBOutlet weak var imageWrapperView: UIView!
+    @IBOutlet weak var fieldsWrapperView: UIView!
     
     var currentHeight: CGFloat = 0.0
-    var changeHeight: Bool = false
+    var changedHeight: Bool = false
+    
+    var inactiveTimer: NSTimer!
+    let inactiveLimit: NSTimeInterval = 60.0
+    
+    var scrollViewController: ScrollViewController!
+    
+    // View variables
+    let scrollViewbottomSpacing = CGFloat(40.0)
     
     @IBOutlet weak var imageTop: NSLayoutConstraint!
     
-    deinit{
+    deinit {
         NSNotificationCenter.defaultCenter().removeObserver(self)
     }
     
@@ -65,6 +77,9 @@ class ObjectViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     override func viewDidLoad() {
         super.viewDidLoad()
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "languageDidChangeNotification:", name: "LANGUAGE_DID_CHANGE", object: nil)
+        scrollViewController = ScrollViewController()
+        scrollViewController.navigationController = navigationController
+        scrollViewController.initTimer()
         
         // Create Scroll View
         createScrollView()
@@ -77,31 +92,37 @@ class ObjectViewController: UIViewController, UITextFieldDelegate, UIImagePicker
             photoImageView.image = object.photo
             showObjectFields(object)
         }
+        view.backgroundColor = UIColor.whiteColor()
     }
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        //objectCollectionViewController?.handleRefresh((objectCollectionViewController?.refreshControl)!)
+        objectCollectionViewController?.handleRefresh((objectCollectionViewController?.refreshControl)!)
         switchLanguage()
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        //self.changeHeight = true
         self.outerView.layoutIfNeeded()
     }
     
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        NSURLCache.sharedURLCache().removeAllCachedResponses()
+        scrollViewController.invalidateTimer()
+    }
+    
     override func viewDidLayoutSubviews() {
-        //super.viewDidLayoutSubviews()
+        super.viewDidLayoutSubviews()
         fixScrollableView()
   
-        if !self.changeHeight {
+        if !self.changedHeight {
             let height = heightForImage()
             self.imageHeight.constant = height
             self.currentHeight = height
         }
         
-        self.changeHeight = true
+        self.changedHeight = true
     }
     
     override func didRotateFromInterfaceOrientation(fromInterfaceOrientation: UIInterfaceOrientation) {
@@ -140,8 +161,6 @@ class ObjectViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         if let object = object {
             showObjectFields(object)
         }
-        
-        fixScrollableView()
     }
     
     func switchLanguage() {
@@ -150,11 +169,16 @@ class ObjectViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         if let object = object {
             showObjectFields(object)
         }
+        fixScrollableView()
     }
     
     //
     //  Utils
     //
+    
+    func dismissViewController() {
+        navigationController?.popToRootViewControllerAnimated(true)
+    }
     
     func showObjectFields(object: Object) {
         let selectedLanguage = NSUserDefaults.standardUserDefaults().valueForKey("selectedLanguage") as? String
@@ -173,7 +197,7 @@ class ObjectViewController: UIViewController, UITextFieldDelegate, UIImagePicker
             } else {
                 titleStackView.hidden = false
             }
-            
+
             if object.objectDescription_translation == "" {
                 descriptionStackView.hidden = true
             } else {
@@ -231,7 +255,6 @@ class ObjectViewController: UIViewController, UITextFieldDelegate, UIImagePicker
         } else {
             objectNumberStackView.hidden = false
         }
-        
     }
     
     func heightForImage() -> CGFloat {
@@ -269,6 +292,9 @@ class ObjectViewController: UIViewController, UITextFieldDelegate, UIImagePicker
             height = heightImage
         }
         
+        // Set spacing in the bottom
+        height = height + scrollViewbottomSpacing
+        
         var insets = scrollView.contentInset
         insets.top = 80.0
         scrollView.contentSize = CGSize(width: containerStackView.frame.width, height: height)
@@ -276,8 +302,11 @@ class ObjectViewController: UIViewController, UITextFieldDelegate, UIImagePicker
     }
     
     func createScrollView() {
-        scrollView = UIScrollView()
+        scrollView = self.scrollViewController
         scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.backgroundColor = UIColor.whiteColor()
+
+        //TODO FIX contraints conflict
         view.addSubview(scrollView)
         
         view.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|[scrollView]|", options: .AlignAllCenterX, metrics: nil, views: ["scrollView": scrollView]))

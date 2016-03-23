@@ -136,7 +136,7 @@
                                                         </connections>
                                                     </imageView>
                                                 </subviews>
-                                                <color key="backgroundColor" red="0.58945590869999998" green="1" blue="0.1852727975" alpha="1" colorSpace="calibratedRGB"/>
+                                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                                 <constraints>
                                                     <constraint firstItem="OEg-fp-J0R" firstAttribute="leading" secondItem="NsX-iO-Ldi" secondAttribute="leading" id="0wV-Gj-WDm"/>
                                                     <constraint firstAttribute="trailing" secondItem="OEg-fp-J0R" secondAttribute="trailing" id="E4c-Mg-EqL"/>
@@ -187,6 +187,7 @@
                         <outlet property="descriptionLabel" destination="Knt-PS-f8y" id="pOc-jr-wFe"/>
                         <outlet property="descriptionStackView" destination="4Ur-xG-PC7" id="7Ap-VG-7YO"/>
                         <outlet property="fieldsStackView" destination="XtL-YG-gBC" id="qYv-qG-Kaz"/>
+                        <outlet property="fieldsWrapperView" destination="cNi-uE-QLL" id="yYX-VR-HYO"/>
                         <outlet property="imageHeight" destination="qgx-HJ-i19" id="AR3-Z6-nt1"/>
                         <outlet property="imageWrapperView" destination="NsX-iO-Ldi" id="NXK-NI-Qdc"/>
                         <outlet property="languageBtn" destination="lW6-Q6-gmp" id="A8t-L1-T9q"/>
@@ -226,10 +227,12 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
+                        <outlet property="delegate" destination="9ht-68-dEh" id="0Tb-fK-FiR"/>
                         <segue destination="0Nh-zE-nwh" kind="relationship" relationship="rootViewController" id="193-pq-dHU"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="UWb-Rl-Wkg" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <customObject id="9ht-68-dEh" customClass="NavigationControllerDelegate" customModule="ZMOnsite" customModuleProvider="target"/>
             </objects>
             <point key="canvasLocation" x="-494" y="376"/>
         </scene>
@@ -237,11 +240,15 @@
         <scene sceneID="XSg-ey-ObF">
             <objects>
                 <collectionViewController title="Object details" id="Tlx-3W-bQK" customClass="ObjectCollectionViewController" customModule="ZMOnsite" customModuleProvider="target" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" id="lL8-gq-98r">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" id="lL8-gq-98r" customClass="ObjectCollectionView" customModule="ZMOnsite" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <collectionViewLayout key="collectionViewLayout" id="nbB-c0-HJj" customClass="PinterestLayout" customModule="ZMOnsite" customModuleProvider="target"/>
+                        <activityIndicatorView key="backgroundView" hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="gray" id="amQ-5d-Xh1">
+                            <rect key="frame" x="0.0" y="-64" width="600" height="600"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        </activityIndicatorView>
                         <cells>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" contentMode="center" reuseIdentifier="AnnotatedPhotoCell" id="1Gj-AU-N1a" customClass="AnnotatedPhotoCell" customModule="ZMOnsite" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="64" width="180" height="180"/>
@@ -255,7 +262,7 @@
                                             <subviews>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="RDo-tF-Bpf">
                                                     <rect key="frame" x="0.0" y="0.0" width="180" height="180"/>
-                                                    <color key="backgroundColor" red="0.28145559210526316" green="1" blue="1" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="180" id="3Q4-NE-VnD"/>
                                                         <constraint firstAttribute="height" constant="180" id="jcX-VW-mBu"/>
@@ -305,7 +312,9 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="activityIndicator" destination="amQ-5d-Xh1" id="anc-VB-0Ce"/>
                         <outlet property="languageBtn" destination="Tyw-er-ACm" id="Emr-V7-5ip"/>
+                        <outlet property="objCollectionView" destination="lL8-gq-98r" id="zn2-l6-mph"/>
                     </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1Dx-TQ-W3V" userLabel="First Responder" sceneMemberID="firstResponder"/>

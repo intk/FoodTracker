@@ -41,12 +41,14 @@ class CategoriesCollectionViewController: UICollectionViewController, NSXMLParse
     
     var collections: [String: [Object]]! = [String: [Object]]()
     
+    var isInit: Bool = false
+    
     // Pull to refresh
     var refreshControl: UIRefreshControl!
     
     @IBOutlet weak var languageBtn: UIBarButtonItem!
     
-    deinit{
+    deinit {
         NSNotificationCenter.defaultCenter().removeObserver(self)
     }
     
@@ -60,23 +62,27 @@ class CategoriesCollectionViewController: UICollectionViewController, NSXMLParse
         // Data
         do {
             if let savedCategories = try loadCategories() {
-                categories += savedCategories
+                //print(savedCategories)
+                categories = savedCategories
             } else {
                 // Load the sample data.
+                isInit = true
                 loadRSSCategories()
             }
         
         } catch let error as NSError {
-            print("Error while loading categories. Reconstructing database.")
+            print("[Categories] Error while loading categories. Reconstructing database.")
             print(error.localizedDescription)
+            isInit = true
             loadRSSCategories()
         }
-        //loadRSSCategories()
+        /*self.isInit = true
+        loadRSSCategories()*/
         
         do {
             collections = try self.loadCollections()
         } catch {
-            //
+            collections = [String: [Object]]()
         }
 
         if let layout = collectionView?.collectionViewLayout as? PinterestLayout {
@@ -86,14 +92,15 @@ class CategoriesCollectionViewController: UICollectionViewController, NSXMLParse
         // Collection view components
         refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: "handleRefresh:", forControlEvents: UIControlEvents.ValueChanged)
-        
         collectionView!.addSubview(refreshControl)
+        
+        
         collectionView!.backgroundColor = UIColor.whiteColor()
         collectionView!.contentInset = UIEdgeInsets(top: 23, left: 5, bottom: 10, right: 5)
         collectionView!.delaysContentTouches = false
         
         // Navitation bar
-        self.navigationItem.title = NSLocalizedString("Exhibitions", comment: "")
+        self.navigationItem.title = NSLocalizedString("Wonderkamers", comment: "")
         let backButton = UIBarButtonItem(title: NSLocalizedString("back", comment:""), style: UIBarButtonItemStyle.Plain, target: nil, action:nil)
         self.navigationItem.backBarButtonItem = backButton
         
@@ -107,6 +114,18 @@ class CategoriesCollectionViewController: UICollectionViewController, NSXMLParse
         NSURLCache.sharedURLCache().removeAllCachedResponses()
     }
     
+    override func collectionView(collectionView: UICollectionView, didUnhighlightItemAtIndexPath indexPath: NSIndexPath) {
+        let cell = collectionView.cellForItemAtIndexPath(indexPath) as! CategoriesImageCell
+        let imageView = cell.imageView
+        imageView.alpha = 1
+    }
+    
+    override func collectionView(collectionView: UICollectionView, didHighlightItemAtIndexPath indexPath: NSIndexPath) {
+        let cell = collectionView.cellForItemAtIndexPath(indexPath) as! CategoriesImageCell
+        let imageView = cell.imageView
+        imageView.alpha = 0.6
+    }
+    
     
     // DATA PERSIST
     func loadCategories() throws -> [Object]? {
@@ -116,7 +135,7 @@ class CategoriesCollectionViewController: UICollectionViewController, NSXMLParse
     func saveCategories() {
         let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(categories, toFile: Object.CategoriesArchiveURL.path!)
         if !isSuccessfulSave {
-            print("Failed to save Categories...")
+            print("[Categories] Failed to save Categories...")
         }
     }
     
@@ -130,7 +149,7 @@ class CategoriesCollectionViewController: UICollectionViewController, NSXMLParse
     
     func execRequest(username: String, password: String, translation: Bool) {
         
-        print("Exec request.")
+        print("[Categories] Exec HTTP request.")
         /* Request with HTTP authentication */
         let username = "zmcms"
         let password = "zmcms"
@@ -162,13 +181,24 @@ class CategoriesCollectionViewController: UICollectionViewController, NSXMLParse
             if index == categories.count-1 {
                 loadImage(object.imageURL, object: object, final: true)
             } else {
-                loadImage(object.imageURL, object: object, final: false)
+                if object.imageChanged || isInit {
+                    loadImage(object.imageURL, object: object, final: false)
+                } else {
+                    // do nothing
+                }
             }
         }
     }
     
     func loadCollections() throws -> [String: [Object]]? {
-        return NSKeyedUnarchiver.unarchiveObjectWithFile(Object.ArchiveURL.path!) as? [String: [Object]]
+        let archivedCollections = NSKeyedUnarchiver.unarchiveObjectWithFile(Object.ArchiveURL.path!) as? [String: [Object]]
+        if archivedCollections == nil {
+            let finalCollectionsValue = [String: [Object]]()
+            return finalCollectionsValue
+        } else {
+            return NSKeyedUnarchiver.unarchiveObjectWithFile(Object.ArchiveURL.path!) as? [String: [Object]]
+        }
+        
     }
     
     
@@ -327,9 +357,8 @@ class CategoriesCollectionViewController: UICollectionViewController, NSXMLParse
                         
                         if obj?.imageURL != entryDictionary["lead_media"]! {
                             // Update new lead media - image is different
-                            print("different url")
                             obj?.imageURL = entryDictionary["lead_media"]!
-                            
+                            obj?.imageChanged = true
                         } else {
                             // do not update - image is the same
                         }
@@ -339,7 +368,7 @@ class CategoriesCollectionViewController: UICollectionViewController, NSXMLParse
                 } else {
                     if !self.englishParse {
                         if entryDictionary["lead_media"]! != "" {
-                            let createdObject = Object(name: entryDictionary["title"]!, photo: defaultBlankPhoto, objectNumber:entryDictionary["object_number"]!, description:entryDictionary["description"]!, story:entryDictionary["story"]!, location:entryDictionary["currentLocation"]!, syncDate:entryDictionary["syncDate"]!, imageURL: entryDictionary["lead_media"]!, title_translation: "", objectDescription_translation:"", location_translation:"", story_translation:"", link: entryDictionary["link"]!)!
+                            let createdObject = Object(name: entryDictionary["title"]!, photo: defaultBlankPhoto, objectNumber:entryDictionary["object_number"]!, description:entryDictionary["description"]!, story:entryDictionary["story"]!, location:entryDictionary["currentLocation"]!, syncDate:entryDictionary["syncDate"]!, imageURL: entryDictionary["lead_media"]!, title_translation: "", objectDescription_translation:"", location_translation:"", story_translation:"", link: entryDictionary["link"]!, imageChanged:false)!
                             
                             
                             categories.append(createdObject)
@@ -403,9 +432,13 @@ class CategoriesCollectionViewController: UICollectionViewController, NSXMLParse
                 func display_image() {
                     let new_image = UIImage(data: data!)
                     object.photo = new_image
+                    object.imageChanged = false
                     
                     if final {
                         self.saveCategories()
+                        if self.isInit {
+                            self.isInit = false
+                        }
                     }
                     self.collectionView?.reloadData()
                 }
@@ -433,34 +466,33 @@ class CategoriesCollectionViewController: UICollectionViewController, NSXMLParse
     func languageDidChangeNotification(notification:NSNotification) {
         print("[Categories] Language did change")
         let language = NSUserDefaults.standardUserDefaults().valueForKey("selectedLanguage") as? String
-        print(language)
         if language == "nl" {
             languageBtn.title = "English"
         } else {
             languageBtn.title = "Dutch"
         }
         
-        self.navigationItem.title = NSLocalizedString("Exhibitions", comment: "")
+        self.navigationItem.title = NSLocalizedString("Wonderkamers", comment: "")
         backButton = UIBarButtonItem(title: NSLocalizedString("back", comment:""), style: UIBarButtonItemStyle.Plain, target: nil, action:nil)
         self.navigationItem.backBarButtonItem = backButton
     }
     
     func checkLanguage() {
         print("[Categories] check language")
-        
         let preferredLanguage = NSLocale.preferredLanguages()[0] as String
-        
         if preferredLanguage == "nl" {
             languageBtn.title = NSLocalizedString("English", comment:"")
             NSUserDefaults.standardUserDefaults().setValue("nl", forKey:"selectedLanguage")
+            NSNotificationCenter.defaultCenter().postNotificationName("LANGUAGE_WILL_CHANGE", object: "nl")
         } else {
             languageBtn.title = NSLocalizedString("Dutch", comment:"")
             NSUserDefaults.standardUserDefaults().setValue("en", forKey:"selectedLanguage")
+            NSNotificationCenter.defaultCenter().postNotificationName("LANGUAGE_WILL_CHANGE", object: "en")
         }
     }
     
     func handleRefresh(refreshControl: UIRefreshControl) {
-        print("Refresh control")
+        print("[Categories] Refresh control")
         
         if Reachability.isConnectedToNetwork() == true {
             
@@ -492,18 +524,6 @@ class CategoriesCollectionViewController: UICollectionViewController, NSXMLParse
         super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)
         self.collectionView!.reloadData()
     }
-    
-    override func collectionView(collectionView: UICollectionView, didHighlightItemAtIndexPath indexPath: NSIndexPath) {
-        /*let cell = collectionView.cellForItemAtIndexPath(indexPath) as! CategoriesImageCell
-        let imageView = cell.imageView
-        imageView.alpha = 0.8*/
-    }
-    
-    override func collectionView(collectionView: UICollectionView, didUnhighlightItemAtIndexPath indexPath: NSIndexPath) {
-        /*let cell = collectionView.cellForItemAtIndexPath(indexPath) as! CategoriesImageCell
-        let imageView = cell.imageView
-        imageView.alpha = 1*/
-    }
 }
 
 extension CategoriesCollectionViewController {
@@ -518,20 +538,19 @@ extension CategoriesCollectionViewController {
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        print("showObjects segue")
-
         // Get the cell that generated this segue.
         if segue.identifier == "showObjects" {
-            let ObjectViewController = segue.destinationViewController as! ObjectCollectionViewController
+            let objectViewController = segue.destinationViewController as! ObjectCollectionViewController
             if let selectedObjectCell = sender as? CategoriesImageCell {
                 let indexPath = collectionView!.indexPathForCell(selectedObjectCell)!
                 let selectedCategory = categories[indexPath.row]
                 let selectedLink = selectedCategory.link
                 let selectedName = selectedCategory.name
                 
-                ObjectViewController.currentCollection = selectedLink
-                ObjectViewController.currentCollectionName = selectedName
-                ObjectViewController.test_dict = self.collections
+                objectViewController.currentCollection = selectedLink
+                objectViewController.currentCollectionName = selectedName
+                objectViewController.categoriesViewController = self
+                objectViewController.test_dict = self.collections
             }
         }
         else {

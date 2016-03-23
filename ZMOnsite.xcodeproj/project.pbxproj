@@ -8,9 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		C009B6DE1C6DE84B0021F112 /* NSBundle+Language.m in Sources */ = {isa = PBXBuildFile; fileRef = C009B6DD1C6DE84B0021F112 /* NSBundle+Language.m */; };
+		C0232A5C1C7CA0AF0020C58A /* NavigationControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0232A5B1C7CA0AF0020C58A /* NavigationControllerDelegate.swift */; };
+		C0232A601C7CA1F50020C58A /* LayoutTransitionAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0232A5F1C7CA1F50020C58A /* LayoutTransitionAnimator.swift */; };
 		C0487B891C6CEE8E002D403E /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = C0487B8B1C6CEE8E002D403E /* Localizable.strings */; };
 		C06649661C73250700EEDF0C /* CategoriesCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06649651C73250700EEDF0C /* CategoriesCollectionViewController.swift */; };
 		C06649681C73269700EEDF0C /* CategoriesImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06649671C73269700EEDF0C /* CategoriesImageCell.swift */; };
+		C071687E1C7F217E00D454DC /* ScrollViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C071687D1C7F217E00D454DC /* ScrollViewController.swift */; };
+		C07168801C7F228F00D454DC /* ObjectCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C071687F1C7F228F00D454DC /* ObjectCollectionView.swift */; };
 		C0A678791C5F81DA0018ACAB /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A678781C5F81DA0018ACAB /* Reachability.swift */; };
 		C0D8873C1C58C9440036A615 /* PinterestLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D8873B1C58C9440036A615 /* PinterestLayout.swift */; };
 		C0D887441C58CB510036A615 /* ObjectCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D887431C58CB510036A615 /* ObjectCollectionViewController.swift */; };
@@ -43,12 +47,16 @@
 		C009B6DC1C6DE84B0021F112 /* NSBundle+Language.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSBundle+Language.h"; sourceTree = "<group>"; };
 		C009B6DD1C6DE84B0021F112 /* NSBundle+Language.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSBundle+Language.m"; sourceTree = "<group>"; };
 		C009B6DF1C6DE8960021F112 /* ZMOnsite-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ZMOnsite-Bridging-Header.h"; sourceTree = "<group>"; };
+		C0232A5B1C7CA0AF0020C58A /* NavigationControllerDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationControllerDelegate.swift; sourceTree = "<group>"; };
+		C0232A5F1C7CA1F50020C58A /* LayoutTransitionAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayoutTransitionAnimator.swift; sourceTree = "<group>"; };
 		C0487B8A1C6CEE8E002D403E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		C0487B8D1C6CEFC5002D403E /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Main.strings; sourceTree = "<group>"; };
 		C0487B8E1C6CEFC5002D403E /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		C0487B8F1C6CEFC5002D403E /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		C06649651C73250700EEDF0C /* CategoriesCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategoriesCollectionViewController.swift; sourceTree = "<group>"; };
 		C06649671C73269700EEDF0C /* CategoriesImageCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategoriesImageCell.swift; sourceTree = "<group>"; };
+		C071687D1C7F217E00D454DC /* ScrollViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollViewController.swift; sourceTree = "<group>"; };
+		C071687F1C7F228F00D454DC /* ObjectCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjectCollectionView.swift; sourceTree = "<group>"; };
 		C0A678781C5F81DA0018ACAB /* Reachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		C0D8873B1C58C9440036A615 /* PinterestLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PinterestLayout.swift; sourceTree = "<group>"; };
 		C0D887431C58CB510036A615 /* ObjectCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjectCollectionViewController.swift; sourceTree = "<group>"; };
@@ -91,6 +99,7 @@
 				CA1902E11B10E523000271C4 /* ObjectViewController.swift */,
 				C0D887431C58CB510036A615 /* ObjectCollectionViewController.swift */,
 				C06649651C73250700EEDF0C /* CategoriesCollectionViewController.swift */,
+				C0232A5B1C7CA0AF0020C58A /* NavigationControllerDelegate.swift */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -130,6 +139,8 @@
 				C0D887491C58CCF90036A615 /* RoundedCornersView.swift */,
 				C0D887461C58CC6D0036A615 /* AnnotatedPhotoCell.swift */,
 				C06649671C73269700EEDF0C /* CategoriesImageCell.swift */,
+				C071687F1C7F228F00D454DC /* ObjectCollectionView.swift */,
+				C071687D1C7F217E00D454DC /* ScrollViewController.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -138,6 +149,7 @@
 			isa = PBXGroup;
 			children = (
 				C0D8873B1C58C9440036A615 /* PinterestLayout.swift */,
+				C0232A5F1C7CA1F50020C58A /* LayoutTransitionAnimator.swift */,
 			);
 			name = Layout;
 			sourceTree = "<group>";
@@ -235,7 +247,7 @@
 				TargetAttributes = {
 					CA1902DB1B10E523000271C4 = {
 						CreatedOnToolsVersion = 7.0;
-						DevelopmentTeam = 5RDXY36V84;
+						DevelopmentTeam = FGL57BKDDX;
 					};
 					CA1902EF1B10E523000271C4 = {
 						CreatedOnToolsVersion = 7.0;
@@ -291,14 +303,18 @@
 			files = (
 				CA734E351B155077001A6F80 /* Object.swift in Sources */,
 				CA1902E21B10E523000271C4 /* ObjectViewController.swift in Sources */,
+				C0232A601C7CA1F50020C58A /* LayoutTransitionAnimator.swift in Sources */,
+				C071687E1C7F217E00D454DC /* ScrollViewController.swift in Sources */,
 				C009B6DE1C6DE84B0021F112 /* NSBundle+Language.m in Sources */,
 				C0D8873C1C58C9440036A615 /* PinterestLayout.swift in Sources */,
+				C0232A5C1C7CA0AF0020C58A /* NavigationControllerDelegate.swift in Sources */,
 				C06649681C73269700EEDF0C /* CategoriesImageCell.swift in Sources */,
 				C0D8874A1C58CCF90036A615 /* RoundedCornersView.swift in Sources */,
 				CA1902E01B10E523000271C4 /* AppDelegate.swift in Sources */,
 				C0D887441C58CB510036A615 /* ObjectCollectionViewController.swift in Sources */,
 				C0A678791C5F81DA0018ACAB /* Reachability.swift in Sources */,
 				C0D887471C58CC6D0036A615 /* AnnotatedPhotoCell.swift in Sources */,
+				C07168801C7F228F00D454DC /* ObjectCollectionView.swift in Sources */,
 				C06649661C73250700EEDF0C /* CategoriesCollectionViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -449,7 +465,7 @@
 				INFOPLIST_FILE = ZMOnsite/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = INTK.ZMOnsite;
+				PRODUCT_BUNDLE_IDENTIFIER = INTK;
 				PRODUCT_NAME = ZMOnsite;
 				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "ZMOnsite/ZMOnsite-Bridging-Header.h";
@@ -468,7 +484,7 @@
 				INFOPLIST_FILE = ZMOnsite/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = INTK.ZMOnsite;
+				PRODUCT_BUNDLE_IDENTIFIER = INTK;
 				PRODUCT_NAME = ZMOnsite;
 				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "ZMOnsite/ZMOnsite-Bridging-Header.h";

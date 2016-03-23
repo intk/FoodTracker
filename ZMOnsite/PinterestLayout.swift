@@ -59,8 +59,6 @@ class PinterestLayout: UICollectionViewLayout {
     private var contentHeight: CGFloat = 0.0
     private var contentWidth: CGFloat = 0.0
     
-    var currentLayout: String = ""
-    
     func preparePortraitLayout() {
         
         var insets = collectionView!.contentInset
@@ -70,7 +68,7 @@ class PinterestLayout: UICollectionViewLayout {
         contentHeight = CGFloat(0.0)
         contentWidth = CGRectGetWidth(collectionView!.bounds) - (insets.left + insets.right)
         
-        if let _ = self.delegate as? CategoriesCollectionViewController {
+        if let catView = self.delegate as? CategoriesCollectionViewController {
             numberOfRows = 1
             numberOfColumns = 3
             var insets = collectionView!.contentInset
@@ -79,11 +77,11 @@ class PinterestLayout: UICollectionViewLayout {
             collectionView!.contentInset = insets
             contentHeight = CGFloat(0.0)
             contentWidth = CGRectGetWidth(collectionView!.bounds) - (insets.left + insets.right)
+            catView.refreshControl.bounds = CGRectMake(0, 0, catView.refreshControl.bounds.size.width, catView.refreshControl.bounds.size.height)
         }
         
         self.collectionView!.alwaysBounceHorizontal = false
         self.collectionView!.alwaysBounceVertical = true
-        
         
         cache = [PinterestLayoutAttributes]()
         
@@ -138,9 +136,9 @@ class PinterestLayout: UICollectionViewLayout {
         contentHeight = CGRectGetHeight(collectionView!.bounds) - (insets.top + insets.bottom)
         contentWidth = CGFloat(0.0)
         
-        self.collectionView!.alwaysBounceVertical = false
+        self.collectionView!.alwaysBounceVertical = true
         
-        if let _ = self.delegate as? CategoriesCollectionViewController {
+        if let catView = self.delegate as? CategoriesCollectionViewController {
             numberOfRows = 1
             numberOfColumns = 3
             
@@ -150,6 +148,8 @@ class PinterestLayout: UICollectionViewLayout {
             
             contentHeight = CGRectGetHeight(collectionView!.bounds) - (insets.top + insets.bottom)
             contentWidth = CGFloat(0.0)
+            catView.refreshControl.bounds = CGRectMake(200, 0, catView.refreshControl.bounds.size.width, catView.refreshControl.bounds.size.height)
+           
         }
         
         cache = [PinterestLayoutAttributes]()

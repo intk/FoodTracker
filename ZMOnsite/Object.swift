@@ -24,6 +24,7 @@ class Object: NSObject, NSCoding {
     var imageURL: String
     var syncDate: String
     var link: String
+    var imageChanged: Bool
     
     // MARK: Archiving Paths
     
@@ -47,12 +48,13 @@ class Object: NSObject, NSCoding {
         static let imageURLKey = "imageURL"
         static let syncDate = "syncDate"
         static let linkKey = "link"
+        static let imageChangedKey = "imageChanged"
     }
 
     // MARK: Initialization
     
     init?(name: String, photo: UIImage?, objectNumber: String, description: String, story: String, location: String, syncDate: String, imageURL: String,
-        title_translation: String, objectDescription_translation: String, location_translation: String, story_translation: String, link: String) {
+        title_translation: String, objectDescription_translation: String, location_translation: String, story_translation: String, link: String, imageChanged: Bool) {
         // Initialize stored properties.
         self.name = name
         self.photo = photo
@@ -63,11 +65,12 @@ class Object: NSObject, NSCoding {
         self.imageURL = imageURL
         self.link = link
         self.syncDate = ""
+        self.imageChanged = imageChanged
         
-        self.title_translation = ""
-        self.objectDescription_translation = ""
-        self.location_translation = ""
-        self.story_translation = ""
+        self.title_translation = title_translation
+        self.objectDescription_translation = objectDescription_translation
+        self.location_translation = location_translation
+        self.story_translation = story_translation
         
         super.init()
         
@@ -93,6 +96,7 @@ class Object: NSObject, NSCoding {
         aCoder.encodeObject(imageURL, forKey: PropertyKey.imageURLKey)
         aCoder.encodeObject(syncDate, forKey: PropertyKey.syncDate)
         aCoder.encodeObject(link, forKey: PropertyKey.linkKey)
+        aCoder.encodeObject(imageChanged, forKey: PropertyKey.imageChangedKey)
     }
     
     required convenience init?(coder aDecoder: NSCoder) {
@@ -116,9 +120,12 @@ class Object: NSObject, NSCoding {
         
         let link = aDecoder.decodeObjectForKey(PropertyKey.linkKey) as! String
         
+        let imageChanged = aDecoder.decodeObjectForKey(PropertyKey.imageChangedKey) as? Bool ?? false
+
+        
         // Must call designated initializer.
         self.init(name: name, photo: photo, objectNumber:objectNumber, description: objectDescription, story: story, location: location, syncDate: syncDate, imageURL: imageURL,
-            title_translation: title_translation, objectDescription_translation: objectDescription_translation, location_translation: location_translation, story_translation: story_translation, link:link)
+            title_translation: title_translation, objectDescription_translation: objectDescription_translation, location_translation: location_translation, story_translation: story_translation, link:link, imageChanged:imageChanged)
     }
 
 }
